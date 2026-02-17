@@ -192,6 +192,16 @@ class Program
             exportHead.Cells[c].Borders.Top.Width = 0;  // ここに線は描かない（上の dbl 行が担当）
         // 二重線のセット終了
 
+        // 「輸出」行のセット
+        exportHead.Cells[0].MergeRight = 1;
+        SetCell(exportHead.Cells[0], "輸出", fontName);
+        exportHead.Cells[0].MergeDown = 1;
+        SetCell(exportHead.Cells[2], "売上", fontName);
+
+        var exportSecond = table.AddRow();
+        SetCell(exportSecond.Cells[2], "返還", fontName);
+
+
     }
 
     static void SetCell(MigraDoc.DocumentObjectModel.Tables.Cell cell, string text, string fontName)
@@ -199,34 +209,5 @@ class Program
         var p = cell.AddParagraph(text);
         p.Format.Font.Name = fontName;
     }
-
-
-    // 置き換え：二重線ヘルパー
-    static void DrawDoubleHorizontalLine(Row upper, Row lower, int startCol, int endCol,
-                                         double widthPt = 0.7, double gapPt = 0.8)
-    {
-        // 0) 行レベルの既存罫線を消す（これが残っていると太線化の原因）
-        upper.Borders.Bottom.Width = 0;
-        lower.Borders.Top.Width = 0;
-
-        // 1) セルレベルでも既存をクリア
-        for (int c = startCol; c <= endCol; c++)
-        {
-            upper.Cells[c].Borders.Bottom.Width = 0;
-            lower.Cells[c].Borders.Top.Width = 0;
-        }
-
-        // 2) ギャップ（隙間）を作る
-        upper.BottomPadding = Unit.FromPoint(gapPt / 2.0);
-        lower.TopPadding = Unit.FromPoint(gapPt / 2.0);
-
-        // 3) 二重線を描く（上下に同じ太さ）
-        for (int c = startCol; c <= endCol; c++)
-        {
-            upper.Cells[c].Borders.Bottom.Width = widthPt; // 1本目
-            lower.Cells[c].Borders.Top.Width = widthPt; // 2本目
-        }
-    }
-
 
 }
