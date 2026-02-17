@@ -1,5 +1,5 @@
-using System.Reflection;
 using PdfSharp.Fonts;
+using System.Reflection;
 
 namespace OutputTaxSummaryPdf;
 
@@ -12,7 +12,7 @@ sealed class FontResolver : IFontResolver
     public static readonly FontResolver Instance = new();
 
     /// <summary>MigraDoc / XFont で指定するフォント名（ResolveTypeface の familyName に一致させる）</summary>
-    public const string NotoSans = "NotoSansJP";
+    public const string NotoSans = "Yu Mincho";
 
     const string NotoSansLight = "NotoSansJP#Light";
     const string NotoSansRegular = "NotoSansJP#Regular";

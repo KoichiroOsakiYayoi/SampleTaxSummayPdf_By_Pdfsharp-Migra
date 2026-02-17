@@ -62,7 +62,6 @@ class Program
         title.Format.Alignment = ParagraphAlignment.Center;
         title.Format.Font.Name = fontName;
         title.Format.Font.Size = 12;
-        title.Format.Font.Bold = true;
 
         // ページ番号（右）
         var page = r1.Cells[2].AddParagraph();
