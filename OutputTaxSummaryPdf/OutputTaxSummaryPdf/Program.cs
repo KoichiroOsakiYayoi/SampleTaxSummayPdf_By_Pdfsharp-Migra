@@ -41,20 +41,61 @@ class Program
     /// </summary>
     static void CreateHeader(Section section, Document document)
     {
-        var titleP = section.Headers.Primary.AddParagraph();
-        titleP.Style = "Header";
-        titleP.Format.Alignment = ParagraphAlignment.Center;
-        titleP.AddText("消費税集計表（売上・仕入）");
-        titleP.Format.Font.Name = FontResolver.NotoSans;
+        var fontName = FontResolver.NotoSans;
 
-        // ページ番号（右寄せ）— タイトルの直下右肩に来る
-        var pageP = section.Headers.Primary.AddParagraph();
-        pageP.Format.Alignment = ParagraphAlignment.Right;
-        pageP.Format.SpaceBefore = Unit.FromPoint(-titleP.GetType().Name.Length * 2);
-        //pageP.Format.SpaceBefore = Unit.FromPoint(-10); // ↑重なりすぎる場合はここを微調整（負の余白で近づける）
-        pageP.AddPageField();
-        pageP.AddText(" 頁");
-        pageP.Format.Font.Name = FontResolver.NotoSans;
+        // 1行目：タイトル中央 + ページ右
+        var hdr = section.Headers.Primary.AddTable();
+        hdr.Borders.Width = 0;
+        hdr.Rows.LeftIndent = 0;
+
+        // A4縦・左右既定余白前提の目安：合計 ≒16cm
+        hdr.AddColumn(Unit.FromCentimeter(5.0));  // 左スペーサ
+        hdr.AddColumn(Unit.FromCentimeter(8.0));  // 中央：タイトル
+        // ページをもう少し右に
+
+
+        hdr.AddColumn(Unit.FromCentimeter(3.0));  // 右：ページ
+
+        var r1 = hdr.AddRow();
+        r1.TopPadding = 0;
+        r1.BottomPadding = 0;
+
+        // タイトル（中央）
+        var title = r1.Cells[1].AddParagraph("消費税集計表（売上・仕入）");
+        title.Format.Alignment = ParagraphAlignment.Center;
+        title.Format.Font.Name = fontName;
+        title.Format.Font.Size = 12;
+        title.Format.Font.Bold = true;
+
+        // ページ番号（右）
+        var page = r1.Cells[2].AddParagraph();
+        page.Format.Alignment = ParagraphAlignment.Right;
+        page.Format.Font.Name = fontName;
+        page.AddPageField(); page.AddText(" 頁");
+
+        // 2行目：タイトル直下の“中央だけ”二重線（幅は中央列の 8cm）
+        var underline = section.Headers.Primary.AddTable();
+        underline.Borders.Width = 0;
+        underline.Rows.LeftIndent = 0;
+        underline.AddColumn(Unit.FromCentimeter(5.0)); // 左スペーサ
+        underline.AddColumn(Unit.FromCentimeter(8.0)); // 中央：二重線
+        underline.AddColumn(Unit.FromCentimeter(3.0)); // 右スペーサ
+
+        var r2 = underline.AddRow();
+        r2.HeightRule = RowHeightRule.Exactly;
+        r2.Height = Unit.FromPoint(0.45);          // 二重線の“間隔” 0.40〜0.50ptで微調整
+        r2.TopPadding = 0;
+        r2.BottomPadding = 0;
+
+        // 中央セルだけ上下罫線を引く（= 二重線）
+        var mid = r2.Cells[1];
+        mid.Borders.Width = 0;
+        mid.Borders.Top.Width = 0.35;               // 線の太さ（細め：0.30〜0.40pt）
+        mid.Borders.Bottom.Width = 0.35;
+
+        // 左右セルには線を出さない
+        r2.Cells[0].Borders.Width = 0;
+        r2.Cells[2].Borders.Width = 0;
     }
 
     /// <summary>
