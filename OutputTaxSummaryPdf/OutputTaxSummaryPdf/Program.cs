@@ -88,7 +88,7 @@ class Program
         SetCell(headerRow.Cells[7], "合 計", fontName);
 
         // 課税のセット
-        // ===== 明細（課税ブロック 13行ぶんを先に確保）=====
+        // ===== 明細（課税ブロック 13行：差引計含む）=====
         const int TaxableBlockRows = 13;
         var rows = new Row[TaxableBlockRows];
         for (int i = 0; i < TaxableBlockRows; i++)
@@ -101,7 +101,7 @@ class Program
         }
 
         // --- 左端の縦書き「課税」（= 13行分）---
-        rows[0].Cells[0].MergeDown = TaxableBlockRows - 1; // 下に12行結合 → 合計13行
+        rows[0].Cells[0].MergeDown = TaxableBlockRows - 1;
         var pv = rows[0].Cells[0].AddParagraph();
         pv.Format.Alignment = ParagraphAlignment.Center;
         pv.Format.LineSpacingRule = LineSpacingRule.Exactly;
@@ -136,6 +136,31 @@ class Program
         rows[5].Cells[1].MergeRight = 1;
         SetCell(rows[5].Cells[1], "小　計", fontName);
         // 対価の返還 終わり
+
+        // 差引計（貸倒課税分の上）
+        rows[6].Cells[1].MergeRight = 1;
+        SetCell(rows[6].Cells[1], "差引計", fontName);
+
+        // 貸倒課税分ブロック（本体, 消費税, 小計）
+        rows[7].Cells[1].MergeDown = 1;
+        SetCell(rows[7].Cells[1], "貸倒課税分", fontName);
+        SetCell(rows[7].Cells[2], "本体", fontName);
+
+        SetCell(rows[8].Cells[2], "消費税", fontName);
+
+        rows[9].Cells[1].MergeRight = 1;
+        SetCell(rows[9].Cells[1], "計", fontName);
+
+        // 貸倒回収ブロック（本体, 消費税, 小計）
+        rows[10].Cells[1].MergeDown = 1;
+        SetCell(rows[10].Cells[1], "貸倒回収", fontName);
+        SetCell(rows[10].Cells[2], "本体", fontName);
+
+        SetCell(rows[11].Cells[2], "消費税", fontName);
+
+        rows[12].Cells[1].MergeRight = 1;
+        SetCell(rows[12].Cells[1], "計", fontName);
+
     }
 
     static void SetCell(MigraDoc.DocumentObjectModel.Tables.Cell cell, string text, string fontName)
