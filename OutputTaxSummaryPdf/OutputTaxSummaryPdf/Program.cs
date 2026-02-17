@@ -99,7 +99,6 @@ class Program
             for (int c = 0; c < table.Columns.Count; c++)
                 rows[i].Cells[c].VerticalAlignment = VerticalAlignment.Center;
         }
-
         // --- 左端の縦書き「課税」（= 13行分）---
         rows[0].Cells[0].MergeDown = TaxableBlockRows - 1;
         var pv = rows[0].Cells[0].AddParagraph();
@@ -114,13 +113,10 @@ class Program
         // --- 「売上」（= 2行分：rows[0]～rows[1]）---
         rows[0].Cells[1].MergeDown = 1;         // 2行分に結合
         SetCell(rows[0].Cells[1], "売上", fontName);
-
         // --- 「本体」（= 2行のうち1行目）---
         SetCell(rows[0].Cells[2], "本体", fontName);
-
         // === 3行目（売上 / 消費税）===
         SetCell(rows[1].Cells[2], "消費税", fontName);
-
         // === 4行目（売上 / 小計）===
         rows[2].Cells[1].MergeRight = 1;
         SetCell(rows[2].Cells[1], "小　計", fontName);
@@ -130,13 +126,12 @@ class Program
         rows[3].Cells[1].MergeDown = 1;
         SetCell(rows[3].Cells[1], "対価の返還", fontName);
         SetCell(rows[3].Cells[2], "本体", fontName);
-
         SetCell(rows[4].Cells[2], "消費税", fontName);
-
         rows[5].Cells[1].MergeRight = 1;
         SetCell(rows[5].Cells[1], "小　計", fontName);
         // 対価の返還 終わり
 
+        // 課税のセット 残り
         // 差引計（貸倒課税分の上）
         rows[6].Cells[1].MergeRight = 1;
         SetCell(rows[6].Cells[1], "差引計", fontName);
@@ -160,6 +155,7 @@ class Program
 
         rows[12].Cells[1].MergeRight = 1;
         SetCell(rows[12].Cells[1], "計", fontName);
+        // 課税のセット 終わり
 
     }
 
