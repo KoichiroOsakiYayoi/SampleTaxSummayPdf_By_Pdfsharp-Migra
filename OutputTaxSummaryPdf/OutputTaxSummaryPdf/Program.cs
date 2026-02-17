@@ -51,10 +51,7 @@ class Program
         // A4縦・左右既定余白前提の目安：合計 ≒16cm
         hdr.AddColumn(Unit.FromCentimeter(5.0));  // 左スペーサ
         hdr.AddColumn(Unit.FromCentimeter(8.0));  // 中央：タイトル
-        // ページをもう少し右に
-
-
-        hdr.AddColumn(Unit.FromCentimeter(3.0));  // 右：ページ
+        hdr.AddColumn(Unit.FromCentimeter(4.5));  // 右：ページ
 
         var r1 = hdr.AddRow();
         r1.TopPadding = 0;
