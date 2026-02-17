@@ -121,13 +121,21 @@ class Program
         // === 3行目（売上 / 消費税）===
         SetCell(rows[1].Cells[2], "消費税", fontName);
 
-        // === 4行目（小計）===
-        // 項目列(1)～小項目列(2)を結合して「小　計」を左寄せで表示
+        // === 4行目（売上 / 小計）===
         rows[2].Cells[1].MergeRight = 1;
         SetCell(rows[2].Cells[1], "小　計", fontName);
         // 売上行のセット 終わり
 
+        // 対価の返還ブロック（売上と同じパターン: 本体, 消費税, 小計）
+        rows[3].Cells[1].MergeDown = 1;
+        SetCell(rows[3].Cells[1], "対価の返還", fontName);
+        SetCell(rows[3].Cells[2], "本体", fontName);
 
+        SetCell(rows[4].Cells[2], "消費税", fontName);
+
+        rows[5].Cells[1].MergeRight = 1;
+        SetCell(rows[5].Cells[1], "小　計", fontName);
+        // 対価の返還 終わり
     }
 
     static void SetCell(MigraDoc.DocumentObjectModel.Tables.Cell cell, string text, string fontName)
