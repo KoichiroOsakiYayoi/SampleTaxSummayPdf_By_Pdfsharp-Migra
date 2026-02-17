@@ -194,6 +194,7 @@ class Program
 
         // 「輸出」行のセット
         exportHead.Cells[0].MergeRight = 1;
+        exportHead.Cells[0].VerticalAlignment = VerticalAlignment.Center;
         SetCell(exportHead.Cells[0], "輸出", fontName);
         exportHead.Cells[0].MergeDown = 1;
         SetCell(exportHead.Cells[2], "売上", fontName);
