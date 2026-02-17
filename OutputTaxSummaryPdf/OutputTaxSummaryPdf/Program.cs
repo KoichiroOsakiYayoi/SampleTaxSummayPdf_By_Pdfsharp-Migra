@@ -157,6 +157,41 @@ class Program
         SetCell(rows[12].Cells[1], "計", fontName);
         // 課税のセット 終わり
 
+
+        // 課税ブロックの最終行（例：rows[12]）の直後に「輸出」ブロックの先頭行を追加
+        // ===== 二重線（課税 → 輸出）を「スペーサ行」で狭い間隔に表現 =====
+        // --- 「課税」→「輸出」の二重線を“専用の1行”で描く ---
+        // まず、課税の最終行の下線は消す（重なり防止）
+        rows[12].Borders.Bottom.Width = 0;
+        for (int c = 0; c < table.Columns.Count; c++)
+            rows[12].Cells[c].Borders.Bottom.Width = 0;
+
+        // ① 二重線専用の行を追加（ここが“間隔”を決める唯一の行）
+        var dbl = table.AddRow();
+        dbl.HeightRule = RowHeightRule.Exactly;
+        dbl.Height = Unit.FromPoint(1);   // ★ 二重線の間隔（狭くしたいほど小さく：0.30〜0.50）
+        dbl.TopPadding = 0;
+        dbl.BottomPadding = 0;
+        dbl.Borders.Width = 0;
+        for (int c = 0; c < table.Columns.Count; c++)
+            dbl.Cells[c].Borders.Width = 0;
+
+        // 全列を1セルに結合して、セルの“上・下”罫線だけを引く
+        dbl.Cells[0].MergeRight = table.Columns.Count - 1;
+        var cell = dbl.Cells[0];
+        cell.Borders.Left.Width = 0;              // 縦線は要らない
+        cell.Borders.Right.Width = 0;
+        cell.Borders.Top.Width = 0.3;            // ★ 線の太さ（上）
+        cell.Borders.Bottom.Width = 0.3;            // ★ 線の太さ（下）
+
+        // ② 二重線のすぐ下に「輸出」先頭行を追加（上罫線は描かない）
+        var exportHead = table.AddRow();
+        exportHead.TopPadding = 0;               // 二重線に寄せる
+        exportHead.BottomPadding = Unit.FromPoint(0.6);
+        for (int c = 0; c < table.Columns.Count; c++)
+            exportHead.Cells[c].Borders.Top.Width = 0;  // ここに線は描かない（上の dbl 行が担当）
+        // 二重線のセット終了
+
     }
 
     static void SetCell(MigraDoc.DocumentObjectModel.Tables.Cell cell, string text, string fontName)
@@ -164,5 +199,34 @@ class Program
         var p = cell.AddParagraph(text);
         p.Format.Font.Name = fontName;
     }
+
+
+    // 置き換え：二重線ヘルパー
+    static void DrawDoubleHorizontalLine(Row upper, Row lower, int startCol, int endCol,
+                                         double widthPt = 0.7, double gapPt = 0.8)
+    {
+        // 0) 行レベルの既存罫線を消す（これが残っていると太線化の原因）
+        upper.Borders.Bottom.Width = 0;
+        lower.Borders.Top.Width = 0;
+
+        // 1) セルレベルでも既存をクリア
+        for (int c = startCol; c <= endCol; c++)
+        {
+            upper.Cells[c].Borders.Bottom.Width = 0;
+            lower.Cells[c].Borders.Top.Width = 0;
+        }
+
+        // 2) ギャップ（隙間）を作る
+        upper.BottomPadding = Unit.FromPoint(gapPt / 2.0);
+        lower.TopPadding = Unit.FromPoint(gapPt / 2.0);
+
+        // 3) 二重線を描く（上下に同じ太さ）
+        for (int c = startCol; c <= endCol; c++)
+        {
+            upper.Cells[c].Borders.Bottom.Width = widthPt; // 1本目
+            lower.Cells[c].Borders.Top.Width = widthPt; // 2本目
+        }
+    }
+
 
 }
