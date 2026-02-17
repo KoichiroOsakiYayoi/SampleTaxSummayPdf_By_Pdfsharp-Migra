@@ -110,13 +110,23 @@ class Program
         pv.Format.Font.Name = fontName;
         // 課税のセット 終わり
 
-        // 売り上げセット
+        // 売上行のセット
         // --- 「売上」（= 2行分：rows[0]～rows[1]）---
         rows[0].Cells[1].MergeDown = 1;         // 2行分に結合
         SetCell(rows[0].Cells[1], "売上", fontName);
 
         // --- 「本体」（= 2行のうち1行目）---
         SetCell(rows[0].Cells[2], "本体", fontName);
+
+        // === 3行目（売上 / 消費税）===
+        SetCell(rows[1].Cells[2], "消費税", fontName);
+
+        // === 4行目（小計）===
+        // 項目列(1)～小項目列(2)を結合して「小　計」を左寄せで表示
+        rows[2].Cells[1].MergeRight = 1;
+        SetCell(rows[2].Cells[1], "小　計", fontName);
+        // 売上行のセット 終わり
+
 
     }
 
