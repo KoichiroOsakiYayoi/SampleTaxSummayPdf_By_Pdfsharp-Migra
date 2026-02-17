@@ -1,3 +1,4 @@
+using System.Reflection;
 using PdfSharp.Fonts;
 
 namespace OutputTaxSummaryPdf;
@@ -13,18 +14,47 @@ sealed class FontResolver : IFontResolver
     /// <summary>MigraDoc / XFont で指定するフォント名（ResolveTypeface の familyName に一致させる）</summary>
     public const string NotoSans = "NotoSansJP";
 
-    /// <summary>内部用 Face 名（Light）</summary>
     const string NotoSansLight = "NotoSansJP#Light";
-
-    /// <summary>内部用 Face 名（Regular）</summary>
     const string NotoSansRegular = "NotoSansJP#Regular";
 
-    static readonly string FontsBasePath = Path.Combine(AppContext.BaseDirectory, "Fonts");
-    static readonly string PathLight = Path.Combine(FontsBasePath, "NotoSansJP-Light.ttf");
-    static readonly string PathRegular = Path.Combine(FontsBasePath, "NotoSansJP-Regular.ttf");
+    const string FileNameLight = "NotoSansJP-Light.ttf";
+    const string FileNameRegular = "NotoSansJP-Regular.ttf";
 
     /// <summary>デフォルトで使用するフォント名（スタイルの Font.Name に設定する値）</summary>
     public string DefaultFontName => NotoSans;
+
+    static string? _fontsBasePath;
+
+    /// <summary>Fonts フォルダのパス（複数候補を試す）</summary>
+    static string? FontsBasePath
+    {
+        get
+        {
+            if (_fontsBasePath != null)
+                return _fontsBasePath;
+
+            var candidates = new List<string>
+            {
+                Path.Combine(AppContext.BaseDirectory, "Fonts"),
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "Fonts"),
+                Path.Combine(Directory.GetCurrentDirectory(), "Fonts"),
+                Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Fonts")
+            };
+
+            foreach (var basePath in candidates)
+            {
+                var resolved = Path.GetFullPath(basePath);
+                var lightPath = Path.Combine(resolved, FileNameLight);
+                if (File.Exists(lightPath))
+                {
+                    _fontsBasePath = resolved;
+                    return _fontsBasePath;
+                }
+            }
+
+            return null;
+        }
+    }
 
     FontResolver() { }
 
@@ -32,7 +62,6 @@ sealed class FontResolver : IFontResolver
     {
         if (string.Equals(familyName, NotoSans, StringComparison.OrdinalIgnoreCase))
         {
-            // Bold の場合は Regular、それ以外は Light
             var faceName = isBold ? NotoSansRegular : NotoSansLight;
             return new FontResolverInfo(faceName, false, isItalic);
         }
@@ -42,10 +71,22 @@ sealed class FontResolver : IFontResolver
 
     public byte[]? GetFont(string faceName)
     {
-        if (faceName == NotoSansLight && File.Exists(PathLight))
-            return File.ReadAllBytes(PathLight);
-        if (faceName == NotoSansRegular && File.Exists(PathRegular))
-            return File.ReadAllBytes(PathRegular);
+        var basePath = FontsBasePath;
+        if (basePath == null)
+            throw new InvalidOperationException(
+                "NotoSansJP フォントが見つかりません。Fonts フォルダに NotoSansJP-Light.ttf と NotoSansJP-Regular.ttf を配置し、" +
+                "プロジェクトの Fonts\\*.ttf が出力にコピーされるようにしてください。探索したパス: " +
+                string.Join("; ", new[]
+                {
+                    Path.Combine(AppContext.BaseDirectory, "Fonts"),
+                    Path.Combine(Directory.GetCurrentDirectory(), "Fonts")
+                }));
+
+        if (faceName == NotoSansLight)
+            return File.ReadAllBytes(Path.Combine(basePath, FileNameLight));
+        if (faceName == NotoSansRegular)
+            return File.ReadAllBytes(Path.Combine(basePath, FileNameRegular));
+
         return null;
     }
 }

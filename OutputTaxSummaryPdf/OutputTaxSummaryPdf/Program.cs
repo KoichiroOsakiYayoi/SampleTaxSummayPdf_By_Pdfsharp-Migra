@@ -1,5 +1,4 @@
 using MigraDoc.DocumentObjectModel;
-using MigraDoc.DocumentObjectModel.Shapes;
 using MigraDoc.Rendering;
 using PdfSharp.Fonts;
 
@@ -37,23 +36,24 @@ class Program
 
     /// <summary>
     /// 消費税集計表のヘッダー1行目を設定する。
-    /// 中央に「消 費 税 集 計 表 ( 売 上 ・ 仕 入 )」、右に「1 頁」（ページ番号）を配置する。
+    /// 中央に「消 費 税 集 計 表 ( 売 上 ・ 仕 入 )」、右に「1 頁」（ページ番号）を1行で配置する。
+    /// 各段落に明示的に NotoSansJP を指定して文字化けを防ぐ。
     /// </summary>
     static void CreateHeader(Section section, Document document)
     {
-        var header = section.Headers.Primary;
+        var titleP = section.Headers.Primary.AddParagraph();
+        titleP.Style = "Header";
+        titleP.Format.Alignment = ParagraphAlignment.Center;
+        titleP.AddText("消費税集計表（売上・仕入）");
+        titleP.Format.Font.Name = FontResolver.NotoSans;
 
-        var headerStyle = document.Styles[StyleNames.Header]!;
-        headerStyle.Font.Name = FontResolver.NotoSans;
-        headerStyle.ParagraphFormat.ClearAll();
-        headerStyle.ParagraphFormat.TabStops.AddTabStop(Unit.FromCentimeter(10.5), TabAlignment.Center);
-        headerStyle.ParagraphFormat.TabStops.AddTabStop(Unit.FromCentimeter(21), TabAlignment.Right);
-
-        var paragraph = header.AddParagraph();
-        paragraph.AddTab();
-        paragraph.AddText("消 費 税 集 計 表 ( 売 上 ・ 仕 入 )");
-        paragraph.AddTab();
-        paragraph.AddPageField();
-        paragraph.AddText(" 頁");
+        // ページ番号（右寄せ）— タイトルの直下右肩に来る
+        var pageP = section.Headers.Primary.AddParagraph();
+        pageP.Format.Alignment = ParagraphAlignment.Right;
+        pageP.Format.SpaceBefore = Unit.FromPoint(-titleP.GetType().Name.Length * 2);
+        //pageP.Format.SpaceBefore = Unit.FromPoint(-10); // ↑重なりすぎる場合はここを微調整（負の余白で近づける）
+        pageP.AddPageField();
+        pageP.AddText(" 頁");
+        pageP.Format.Font.Name = FontResolver.NotoSans;
     }
 }
