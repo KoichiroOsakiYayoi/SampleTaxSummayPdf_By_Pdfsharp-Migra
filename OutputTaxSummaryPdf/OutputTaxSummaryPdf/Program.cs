@@ -56,4 +56,10 @@ class Program
         pageP.AddText(" 頁");
         pageP.Format.Font.Name = FontResolver.NotoSans;
     }
+
+    static void CreateDetail(Section section, Document document)
+    {
+
+    }
+
 }
