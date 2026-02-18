@@ -92,6 +92,10 @@ class Program
         // 左右セルには線を出さない
         r2.Cells[0].Borders.Width = 0;
         r2.Cells[2].Borders.Width = 0;
+
+        // 二重線と期間情報の間のスペース
+        var spacer2 = section.Headers.Primary.AddParagraph();
+        spacer2.Format.LineSpacing = Unit.FromPoint(8);
     }
 
     /// <summary>
@@ -100,6 +104,12 @@ class Program
     static void CreateDetail(Section section, Document document)
     {
         var fontName = FontResolver.NotoSans;
+
+        var period = section.AddParagraph("自 令和 6年 4月 1日　至 令和 7年 3月31日(決算仕訳を含む)");
+        period.Format.Alignment = ParagraphAlignment.Center;
+        period.Format.Font.Name = fontName;
+        period.Format.Font.Size = 9;
+        period.Format.SpaceAfter = Unit.FromPoint(6);
 
         var table = section.AddTable();
         table.Borders.Visible = true;
