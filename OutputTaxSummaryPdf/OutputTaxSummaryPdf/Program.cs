@@ -111,6 +111,29 @@ class Program
         period.Format.Font.Size = 9;
         period.Format.SpaceAfter = Unit.FromPoint(6);
 
+        // 売上集計表のラベル行（左：売上集計表、右：消費税率）
+        var labelTable = section.AddTable();
+        labelTable.Borders.Width = 0;
+        labelTable.Rows.LeftIndent = 0;
+        labelTable.AddColumn(Unit.FromCentimeter(10.0));  // 左：売上集計表
+        labelTable.AddColumn(Unit.FromCentimeter(7.0));   // 右：消費税率
+
+        var labelRow = labelTable.AddRow();
+        labelRow.TopPadding = 0;
+        labelRow.BottomPadding = Unit.FromPoint(2);
+
+        // 左：売上集計表
+        var labelLeft = labelRow.Cells[0].AddParagraph("売上集計表");
+        labelLeft.Format.Alignment = ParagraphAlignment.Left;
+        labelLeft.Format.Font.Name = fontName;
+        labelLeft.Format.Font.Size = 9;
+
+        // 右：消費税率
+        var labelRight = labelRow.Cells[1].AddParagraph("（消費税率：　合　　計　　）");
+        labelRight.Format.Alignment = ParagraphAlignment.Right;
+        labelRight.Format.Font.Name = fontName;
+        labelRight.Format.Font.Size = 9;
+
         var table = section.AddTable();
         table.Borders.Visible = true;
         // ===== 列定義（左エリアを 3 列に分割）=====
