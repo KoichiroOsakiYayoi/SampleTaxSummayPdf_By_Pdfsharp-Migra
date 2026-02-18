@@ -20,6 +20,8 @@ class Program
 
         CreateHeader(section, document);
 
+        CreateFooter(section, document);
+
         CreateDetail(section, document);
 
         var renderer = new PdfDocumentRenderer
@@ -96,6 +98,19 @@ class Program
         // 二重線と期間情報の間のスペース
         var spacer2 = section.Headers.Primary.AddParagraph();
         spacer2.Format.LineSpacing = Unit.FromPoint(8);
+    }
+
+    /// <summary>
+    /// フッター（右下に「受入基準_部門有り」を表示）
+    /// </summary>
+    static void CreateFooter(Section section, Document document)
+    {
+        var fontName = FontResolver.NotoSans;
+
+        var footer = section.Footers.Primary.AddParagraph("受入基準_部門有り");
+        footer.Format.Alignment = ParagraphAlignment.Right;
+        footer.Format.Font.Name = fontName;
+        footer.Format.Font.Size = 9;
     }
 
     /// <summary>
